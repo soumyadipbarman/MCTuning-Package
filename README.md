@@ -1,4 +1,10 @@
 ### MC Tuning
+
+* This package extracts chi-sqaured values from the plots saved in pdf file
+* Normalize the values in scale 1 -- 10
+* Discards histograms which have more than one minima
+* Find sensive zone for tuning
+
 Software --
 - Rivet
 - Root
