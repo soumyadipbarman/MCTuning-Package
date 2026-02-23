@@ -1,9 +1,9 @@
 ### MC Tuning
 
-* This package extracts chi-sqaured values from the plots saved in pdf file
-* Normalize the values in scale 1 -- 10
-* Discards histograms which have more than one minima
-* Find sensive zone for tuning
+1. This package extracts chi-sqaured values from the plots saved in pdf file
+2. Normalize the values in scale 1 -- 10
+3. Discards histograms which have more than one minima
+4. Find sensive zone for tuning
 
 Software --
 - Rivet
@@ -63,11 +63,11 @@ Usage:
 - Use to decide the sensitivity zone and find range for tuning a parameter
 
 ```
-Compile : g++ Compare.C $(root-config --cflags --libs) -o compare
-Execute : ./compare --input1 refined-A --input2 refined-B --mode combined --output comp_out --xvalues scan_points.txt
-Execute : ./compare --input1 refined-A --input2 refined-B --mode individual --output comp_out --range 0.0 1.0 0.1
+Compile : g++ Comparion.C $(root-config --cflags --libs) -o comparion
+Execute : ./comparion --input1 refined-A --input2 refined-B --mode combined --output comp_out --xvalues scan_points.txt
+Execute : ./comparion --input1 refined-A --input2 refined-B --mode individual --output comp_out --range 0.0 1.0 0.1
 Usage:
-  ./compare --input1 dirA --input2 dirB --mode [combined|individual] --output outdir
+  ./comparion --input1 dirA --input2 dirB --mode [combined|individual] --output outdir
 
 Optional x-axis options:
   --xvaluesA file   OR   --rangeA xmin xmax step
