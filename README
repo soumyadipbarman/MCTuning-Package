@@ -1,76 +1,128 @@
-### MC Tuning
-Software --
-- Rivet
-- Root
-- Professor
-- C++/Python code 
+# MC Tuning
 
-## To extract chi-sqaured values from the pdf file/plots
+## Software Used
+- Rivet  
+- ROOT  
+- Professor  
+- C++ / Python  
 
-```
+---
+
+## Extract χ² values from PDF plots
+
+```bash
 usage: python extract_chi2.py --input INPUT --output OUTPUT
 
 optional arguments:
   -h, --help       show this help message and exit
   --input INPUT    Input PDF file, directory, or wildcard pattern
-  --output OUTPUT  Output directory name (optional). If not given, auto-generated.
+  --output OUTPUT  Output directory name (optional). If not given, it is auto-generated.
 
-It will create to `txt' files named --
-- chi2_values.txt -> consists of chi2 values from the pdf file
-- chi2_histo_values.txt -> consists of chi2 values and the name of the histogram from the pdf file
-```
+This step creates two text files:
 
-## To normalize the chi-sqaured values (scale 1 -- 10) from the pdf file
+chi2_values.txt → contains only the χ² values extracted from the PDFs
 
-```
+chi2_histo_values.txt → contains histogram names along with χ² values
+
+Normalize χ² values (scale 0 → 10)
 Compile : g++ Normalize.C $(root-config --cflags --libs) -o normalize
-Execute : ./normalize --input test/chi2_values.txt --output output.txt
-Example : ./normalize --input chi2_values.txt --output normalized_output.txt
+Execute : ./normalize input.txt output.txt
 
-Usage:
-  ./normalize --input input.txt --output output.txt
-```
-
-## To plot the normalized valus versus parameter for each distribution
-
-```
+Example:
+./normalize chi2_values.txt normalized_output.txt
+Plot normalized χ² vs parameter
 Compile : g++ Plotter.C $(root-config --cflags --libs) -o plotter
-Execute : ./plotter normalized.txt --parameter aLund Fragmentation function --mode combined/individual/refined --names chi2_histo_values.txt --output dir
-Usage:
-./plotter normalized.txt --parameter <name> --mode [combined|individual|refined] [--names file] [--output dir] [--range xmin xmax step] [--xvalues file]
-- normalized.txt - normalized values
---parameter - name of the parameter in the x-axis
---mode - combined/individual/refined 
-	- combined -> plots all the histograms in one canvas
-	- individual -> plots the histograms individually on per canvas basis
-	- refined -> discard plots which have more than one minima and plot the refined histograms in one canvas
--- names - name of the histograms with the chi-sqaured values (chi2_histo_values.txt)
---output - name of the output directory 
---range - x-axis_min_value x-axis_max_value step
---xvalues - `txt' file consists of bin-ranges
-```
-## Compare two refined directories
 
-- Compare two directories of refined histograms -- e.g. refined-A and refined-B 
-- specifically two parameters scan files
-- Plot histograms from two refined directories in one canvas
-- Use to decide the sensitivity zone and find range for tuning a parameter
+Execute :
+./plotter normalized.txt --parameter "aLund Fragmentation function" \
+--mode combined \
+--names chi2_histo_values.txt \
+--output dir
+Usage
+./plotter normalized.txt --parameter <name> \
+--mode [combined|individual|refined] \
+[--names file] [--output dir] \
+[--range xmin xmax step] [--xvalues file]
+Options
 
-```
-Compile : g++ Compare.C $(root-config --cflags --libs) -o compare
-Execute : ./compare --input1 refined-A --input2 refined-B --mode combined --output comp_out --xvalues scan_points.txt
-Execute : ./compare --input1 refined-A --input2 refined-B --mode individual --output comp_out --range 0.0 1.0 0.1
-Usage:
-  ./compare --input1 dirA --input2 dirB --mode [combined|individual] --output outdir
+normalized.txt → normalized χ² values
 
-Optional x-axis options:
-  --xvaluesA file   OR   --rangeA xmin xmax step
-  --xvaluesB file   OR   --rangeB xmin xmax step
-```
-## Filter histograms from the ipol.dat file which are sensitive that will be tuned
+--parameter → name of the scan parameter (x-axis label)
 
-```
-Compile : g++ Filter.C $(root-config --cflags --libs) -o filter
-Usage:
+--mode
+
+combined → all histograms in one canvas
+
+individual → one histogram per canvas
+
+refined → only histograms with a single minimum are kept
+
+--names → histogram name file (chi2_histo_values.txt)
+
+--output → output directory
+
+--range → define x-axis as xmin xmax step
+
+--xvalues → file containing explicit scan points
+
+Compare two refined directories
+
+Compare two scan results (e.g. refined-A and refined-B).
+
+Features
+
+Overlay histograms from two directories
+
+Automatically match histograms by name
+
+Skip unmatched histograms
+
+Helps identify sensitive tuning regions
+
+Compile
+g++ Compare.C $(root-config --cflags --libs) -o compare
+Run examples
+# Combined mode (all plots in one canvas)
+./compare --input1 refined-A --input2 refined-B \
+--mode combined --output comp_out \
+--xvaluesA scan_points.txt --xvaluesB scan_points.txt
+
+# Individual mode (only matched plots)
+./compare --input1 refined-A --input2 refined-B \
+--mode individual --output comp_out \
+--rangeA 0.0 1.0 0.1 --rangeB 0.0 1.0 0.1
+Usage
+./compare --input1 dirA --input2 dirB --mode [combined|individual] --output outdir
+Optional x-axis control
+--xvaluesA file   OR   --rangeA xmin xmax step
+--xvaluesB file   OR   --rangeB xmin xmax step
+Filter histograms for Professor tuning
+
+Select only the histograms present in refined scans to build the Professor tuning dataset.
+
+Compile
+g++ Filter.C $(root-config --cflags --libs) -o filter
+Usage
 ./filter lists.dat refined-A/refined_plots.txt refined-B/refined_plots.txt output.dat
-```
+
+Workflow Summary
+
+Extract χ² from PDFs
+
+Normalize χ² values
+
+Plot scans and refine histograms
+
+Compare scans between different parameter setups
+
+Filter histograms for Professor tuning
+
+Run prof2-ipol → prof2-tune
+
+Notes
+
+All plots are saved as PDF
+
+Refined mode keeps only single-minimum distributions
+
+Compatible with Rivet + Professor tuning workflow
